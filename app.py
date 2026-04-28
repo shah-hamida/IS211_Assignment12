@@ -63,6 +63,16 @@ def add_quiz():
         return redirect("/dashboard")
     return render_template("add_quiz.html")
 
+@app.route("/student/<int:id>")
+def student_results(id):
+    if "logged_in" not in session:
+        return redirect("/login")
+    connection = get_db()
+    results = connection.execute(
+        "SELECT quiz_id, score FROM results WHERE student_id = ?",(id,)).fetchall()
+    connection.close()
+    return render_template("student_results.html", results=results)
+
 @app.route("/results/add", methods=["GET", "POST"])
 def add_result():
     if "logged_in" not in session:
@@ -83,12 +93,12 @@ def add_result():
     students = connection.execute("SELECT * FROM students").fetchall()
     quizzes = connection.execute("SELECT * FROM quizzes").fetchall()
     connection.close()
-    return render_template("results.html", students=students, quizzes=quizzes)
+    return render_template("add_result.html", students=students, quizzes=quizzes)
 
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
 
 
 
